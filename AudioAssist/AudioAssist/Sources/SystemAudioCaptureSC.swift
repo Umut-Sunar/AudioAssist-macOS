@@ -100,8 +100,8 @@ final class SystemAudioCaptureSC: NSObject, SCStreamOutput, SCStreamDelegate {
         
         // 🚨 THREAD SAFE: Stop stream on processing queue to avoid deadlock
         processingQueue.sync {
-            stream?.stopCapture { _ in }
-            stream = nil
+        stream?.stopCapture { _ in }
+        stream = nil
         }
         
         // References'ları temizle
@@ -322,7 +322,7 @@ final class SystemAudioCaptureSC: NSObject, SCStreamOutput, SCStreamDelegate {
             print("[SC] ⚠️ Skipping audio processing - already in progress")
             return
         }
-        
+
         guard type == .audio else { 
             print("[SC] ⚠️ Received non-audio type: \(type)")
             return 
@@ -360,17 +360,17 @@ final class SystemAudioCaptureSC: NSObject, SCStreamOutput, SCStreamDelegate {
         // ✅ IMPROVED: Güvenli format çıkarma
         guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer) else {
             print("[SC] ❌ Failed to get format description")
-            return
+            return 
         }
-        
+
         guard let streamBasicDescription = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) else {
             print("[SC] ❌ Failed to get stream basic description")
-            return
+            return 
         }
         
         guard let sourceFormat = AVAudioFormat(streamDescription: streamBasicDescription) else {
             print("[SC] ❌ Failed to create source format from stream description")
-            return
+            return 
         }
         
         print("[SC] 🔍 Source format: \(sourceFormat)")
@@ -387,9 +387,9 @@ final class SystemAudioCaptureSC: NSObject, SCStreamOutput, SCStreamDelegate {
                     "Source": "sampleRate=\(sourceFormat.sampleRate), channels=\(sourceFormat.channelCount), format=\(sourceFormat.commonFormat.rawValue)",
                     "Target": "sampleRate=\(outFmt.sampleRate), channels=\(outFmt.channelCount), format=\(outFmt.commonFormat.rawValue)"
                 ])
-                return
-            }
-            
+            return
+        }
+        
             self.converter = newConverter
             print("[SC] ✅ AVAudioConverter created successfully")
         }
@@ -398,7 +398,7 @@ final class SystemAudioCaptureSC: NSObject, SCStreamOutput, SCStreamDelegate {
             print("[SC] ❌ Converter is nil after creation attempt")
             return
         }
-
+        
         // ✅ SCREENCAPTUREKIT BYPASS: Skip complex buffer conversion, use direct raw data approach
         // ScreenCaptureKit CMSampleBuffer has problematic internal structure, let's extract raw data
         guard let rawPCMData = extractRawPCMData(from: sampleBuffer, sourceFormat: sourceFormat) else {
